@@ -74,7 +74,7 @@ public class ApplicationController {
         }
     }
 
-    @GetMapping("/")
+    @GetMapping("/viewall")
     public ResponseEntity<List<Application>> getAllApplications() {
         return ResponseEntity.ok(applicationService.getAllApplications());
     }
