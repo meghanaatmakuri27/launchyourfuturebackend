@@ -7,10 +7,10 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ApplicationRepository extends JpaRepository<Application, Long> {
+public interface ApplicationRepository extends JpaRepository<Application, Integer> {
     
-    @Query("SELECT COUNT(a) > 0 FROM Application a WHERE a.email = :email AND a.jobId = :jobId")
-    boolean existsByEmailAndJobId(@Param("email") String email, @Param("jobId") Long jobId);
+    @Query("SELECT COUNT(a) > 0 FROM Application a WHERE a.email = :email AND a.id = :id")
+    boolean existsByEmailAndJobId(@Param("email") String email, @Param("jobId") Integer i);
     @Query("SELECT a FROM Application a WHERE a.email = :email")
     List<Application> findByEmail(@Param("email")String email);
 }

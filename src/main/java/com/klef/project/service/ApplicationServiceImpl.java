@@ -20,19 +20,19 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public Optional<Application> getApplicationById(Long id) {
+    public Optional<Application> getApplicationById(Integer id) {
         return applicationRepository.findById(id);
     }
 
     @Override
-    public void deleteApplication(Long id) {
+    public void deleteApplication(Integer id) {
         applicationRepository.deleteById(id);
     }
 
     @Override
     public Application saveApplication(Application application) {
         // Check if the email already exists for the same jobId
-        if (isApplicationExist(application.getEmail(), application.getJobId())) {
+        if (isApplicationExist(application.getEmail(), application.getId())) {
             // You can either throw an exception or handle it according to your business logic
             throw new IllegalArgumentException("Application already exists for this job and email.");
         }
@@ -40,7 +40,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         // If it doesn't exist, save the application
         return applicationRepository.save(application);
     }
-    public Application updateStatus(Long applicationId, String newStatus) {
+    public Application updateStatus(Integer applicationId, String newStatus) {
         Application application = applicationRepository.findById(applicationId)
             .orElseThrow(() -> new RuntimeException("Application not found with ID " + applicationId));
 
@@ -49,10 +49,12 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public boolean isApplicationExist(String email, Long jobId) {
-        return applicationRepository.existsByEmailAndJobId(email, jobId);
+    public boolean isApplicationExist(String email, Integer i) {
+        return applicationRepository.existsByEmailAndJobId(email, i);
     }
     public List<Application> getApplicationsByEmail(String email) {
         return applicationRepository.findByEmail(email); // Calls the repository to find applications by email
     }
+
+	
 }

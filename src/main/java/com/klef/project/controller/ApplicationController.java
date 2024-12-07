@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.sql.rowset.serial.SerialBlob;
+
+import java.io.IOException;
 import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,53 +29,38 @@ public class ApplicationController {
         this.applicationService = applicationService;
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<String> addApplication(
-            @RequestParam Long jobId,
-            @RequestParam String firstName,
-            @RequestParam String lastName,
-            @RequestParam String email,
-            @RequestParam String phone,
-            @RequestParam String gender,
-            @RequestParam String country,
-            @RequestParam Boolean canVerifyWork,
-            @RequestParam(required = false) MultipartFile resume,
-            @RequestParam(required = false) List<String> educationDetails,
-            @RequestParam(required = false) List<String> skills
-    ) {
+    @PostMapping("/submitapplication")
+    public ResponseEntity<String> submitApplication(
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam("tenthcgpa") double tenthCgpa,
+            @RequestParam("twelethcgpa") double twelethCgpa,
+            @RequestParam("gradutioncgpa") double gradutionCgpa,
+            @RequestParam("resume") MultipartFile resumeFile) {
         try {
-            Application application = new Application();
-            application.setJobId(jobId);
-            application.setFirstName(firstName);
-            application.setLastName(lastName);
-            application.setEmail(email);
-            application.setPhone(phone);
-            application.setGender(gender);
-            application.setCountry(country);
-            application.setCanVerifyWork(canVerifyWork);
-
-            if (resume != null && resume.getSize() <= MAX_FILE_SIZE) {
-                byte[] resumeBytes = resume.getBytes();
-                Blob blob = new SerialBlob(resumeBytes);
-                application.setResume(blob);
-            } else {
-                application.setResume(null); // Handle when resume isn't uploaded.
+            if (resumeFile.isEmpty() || !resumeFile.getOriginalFilename().endsWith(".pdf")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Invalid resume file. Please upload a PDF.");
             }
-            
+            Application application = new Application();
+            application.setName(name);
+            application.setEmail(email);
+            application.setTenthcgpa(tenthCgpa);
+            application.setTwelethcgpa(twelethCgpa);
+            application.setGradutioncgpa(gradutionCgpa);
+            application.setResume(new javax.sql.rowset.serial.SerialBlob(resumeFile.getBytes()));
 
-            // Serialize lists into comma-separated strings for database storage
-            application.setEducationDetails(
-                    educationDetails != null ? String.join(",", educationDetails) : ""
-            );
-            application.setSkills(
-                    skills != null ? String.join(",", skills) : ""
-            );
+            // Save application using the service
+           applicationService.saveApplication(application);
 
-            // Persist the application entity
-            applicationService.saveApplication(application);
-            return ResponseEntity.ok("Application added successfully.");
+            return ResponseEntity.status(HttpStatus.CREATED).body("submitted ");
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error processing the resume file: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error submitting application: " + e.getMessage());
         }
     }
 
@@ -83,14 +70,14 @@ public class ApplicationController {
     }
 
     @GetMapping("/{applicationId}")
-    public ResponseEntity<Application> getApplication(@PathVariable Long applicationId) {
+    public ResponseEntity<Application> getApplication(@PathVariable Integer applicationId) {
         return applicationService.getApplicationById(applicationId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteApplication(@PathVariable Long id) {
+    public ResponseEntity<String> deleteApplication(@PathVariable Integer id) {
         try {
             applicationService.deleteApplication(id);
             return ResponseEntity.ok("Deleted successfully.");

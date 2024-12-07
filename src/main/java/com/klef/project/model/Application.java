@@ -1,66 +1,59 @@
 package com.klef.project.model;
 
+import java.sql.Blob;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
-import java.sql.Blob;
+import jakarta.persistence.Table;
 
 @Entity
+@Table
 public class Application {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long applicationId;
+    private int id;
 
-    private Long jobId;
-    private String firstName;
-    private String lastName;
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private String email;
-    private String phone;
-    private String gender;
-    private String country;
-    private Boolean canVerifyWork;
 
+    @Column(nullable = false)
+    private double tenthcgpa;
+
+    @Column(nullable = false)
+    private double twelethcgpa;
+
+    @Column(nullable = false)
+    private double gradutioncgpa;
+
+    @Column(nullable = false)
     private Blob resume;
 
-    // Store all education details in a single string column as JSON or comma-separated values
-    private String educationDetails;
-
-    // Store all skills in a single string column as JSON or comma-separated values
-    private String skills;
-
-    public Long getApplicationId() {
-        return applicationId;
+    // Default Constructor
+    public Application() {
     }
 
-    public void setApplicationId(Long applicationId) {
-        this.applicationId = applicationId;
+    // Getters and Setters
+    public int getId() {
+        return id;
     }
 
-    public Long getJobId() {
-        return jobId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setJobId(Long jobId) {
-        this.jobId = jobId;
+    public String getName() {
+        return name;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -71,36 +64,28 @@ public class Application {
         this.email = email;
     }
 
-    public String getPhone() {
-        return phone;
+    public double getTenthcgpa() {
+        return tenthcgpa;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setTenthcgpa(double tenthcgpa) {
+        this.tenthcgpa = tenthcgpa;
     }
 
-    public String getGender() {
-        return gender;
+    public double getTwelethcgpa() {
+        return twelethcgpa;
     }
 
-    public void setGender(String gender) {
-        this.gender = gender;
+    public void setTwelethcgpa(double twelethcgpa) {
+        this.twelethcgpa = twelethcgpa;
     }
 
-    public String getCountry() {
-        return country;
+    public double getGradutioncgpa() {
+        return gradutioncgpa;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public Boolean getCanVerifyWork() {
-        return canVerifyWork;
-    }
-
-    public void setCanVerifyWork(Boolean canVerifyWork) {
-        this.canVerifyWork = canVerifyWork;
+    public void setGradutioncgpa(double gradutioncgpa) {
+        this.gradutioncgpa = gradutioncgpa;
     }
 
     public Blob getResume() {
@@ -109,21 +94,5 @@ public class Application {
 
     public void setResume(Blob resume) {
         this.resume = resume;
-    }
-
-    public String getEducationDetails() {
-        return educationDetails;
-    }
-
-    public void setEducationDetails(String educationDetails) {
-        this.educationDetails = educationDetails;
-    }
-
-    public String getSkills() {
-        return skills;
-    }
-
-    public void setSkills(String skills) {
-        this.skills = skills;
     }
 }
