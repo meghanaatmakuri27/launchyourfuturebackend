@@ -30,8 +30,6 @@ public class StudentController {
 
     @Autowired
     private StudentService studentService;
-
-    @CrossOrigin(origins = "https://launchyourfuture.netlify.app", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
     @PostMapping("/addstudent")
     public ResponseEntity<String> addStudent(@RequestBody Student student) {
         if (student.getEmail() == null || student.getPassword() == null) {
