@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.sql.Blob;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,13 +37,14 @@ public class Application {
     private String phone;
 
     @Email(message = "Email should be valid")
+    @NotNull(message = "Email is required")
     @Column(name = "email", nullable = false)
     private String email;
 
     @Lob
-    @NotNull(message = "Resume cannot be null")
+    @NotNull(message = "Resume file is required")
     @Column(name = "resume", nullable = false)
-    private byte[] resume;
+    private Blob resume;
 
     @NotNull(message = "Gender is required")
     @Column(name = "gender", nullable = false)
@@ -53,9 +55,9 @@ public class Application {
     @Column(name = "country", nullable = false, length = 100)
     private String country;
 
-    @NotNull(message = "Can verify work cannot be null")
+    @NotNull(message = "Work verification status is required")
     @Column(name = "can_verify_work", nullable = false)
-    private Boolean canVerifyWork; // Changed to Boolean for clarity and consistency
+    private Boolean canVerifyWork;
 
     @Column(name = "applied_at", nullable = false, updatable = false)
     private LocalDateTime appliedAt;
@@ -71,8 +73,8 @@ public class Application {
     private List<String> skills;
 
     @Column(name = "status", nullable = false)
-    private String status = "ACTIVE"; // Default to "PENDING" status
-    
+    private String status = "PENDING";
+
     @PrePersist
     public void prePersist() {
         appliedAt = LocalDateTime.now();
@@ -80,50 +82,115 @@ public class Application {
 
     // Getters and Setters
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public Long getJobId() { return jobId; }
-    public void setJobId(Long jobId) { this.jobId = jobId; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public Long getJobId() {
+        return jobId;
+    }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setJobId(Long jobId) {
+        this.jobId = jobId;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public String getFirstName() {
+        return firstName;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-    public byte[] getResume() { return resume; }
-    public void setResume(byte[] resume) { this.resume = resume; }
+    public String getLastName() {
+        return lastName;
+    }
 
-    public String getGender() { return gender; }
-    public void setGender(String gender) { this.gender = gender; }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
+    public String getPhone() {
+        return phone;
+    }
 
-    public Boolean getCanVerifyWork() { return canVerifyWork; }
-    public void setCanVerifyWork(Boolean canVerifyWork) { this.canVerifyWork = canVerifyWork; }
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-    public LocalDateTime getAppliedAt() { return appliedAt; }
-    public void setAppliedAt(LocalDateTime appliedAt) { this.appliedAt = appliedAt; }
+    public String getEmail() {
+        return email;
+    }
 
-    public List<String> getEducationDetails() { return educationDetails; }
-    public void setEducationDetails(List<String> educationDetails) { this.educationDetails = educationDetails; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public List<String> getSkills() { return skills; }
-    public void setSkills(List<String> skills) { this.skills = skills; }
+    public Blob getResume() {
+        return resume;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setResume(Blob resume) {
+        this.resume = resume;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public Boolean getCanVerifyWork() {
+        return canVerifyWork;
+    }
+
+    public void setCanVerifyWork(Boolean canVerifyWork) {
+        this.canVerifyWork = canVerifyWork;
+    }
+
+    public LocalDateTime getAppliedAt() {
+        return appliedAt;
+    }
+
+    public void setAppliedAt(LocalDateTime appliedAt) {
+        this.appliedAt = appliedAt;
+    }
+
+    public List<String> getEducationDetails() {
+        return educationDetails;
+    }
+
+    public void setEducationDetails(List<String> educationDetails) {
+        this.educationDetails = educationDetails;
+    }
+
+    public List<String> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
