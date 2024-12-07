@@ -52,11 +52,14 @@ public class ApplicationController {
             application.setCountry(country);
             application.setCanVerifyWork(canVerifyWork);
 
-            // Handle resume upload if within size limits
             if (resume != null && resume.getSize() <= MAX_FILE_SIZE) {
-                Blob blob = new SerialBlob(resume.getBytes());
+                byte[] resumeBytes = resume.getBytes();
+                Blob blob = new SerialBlob(resumeBytes);
                 application.setResume(blob);
+            } else {
+                application.setResume(null); // Handle when resume isn't uploaded.
             }
+            
 
             // Serialize lists into comma-separated strings for database storage
             application.setEducationDetails(
