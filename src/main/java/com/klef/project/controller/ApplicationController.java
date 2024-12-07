@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,14 +19,16 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit for file upload
 
     @Autowired
     public ApplicationController(ApplicationService applicationService) {
         this.applicationService = applicationService;
     }
 
-    // Create Application
+    /**
+     * POST endpoint to create a new application
+     */
     @PostMapping("/add")
     public ResponseEntity<String> addApplication(
             @RequestParam Long jobId,
@@ -50,8 +54,10 @@ public class ApplicationController {
             application.setCountry(country);
             application.setCanVerifyWork(canVerifyWork);
 
+            // Handle file blob conversion safely
             if (resume != null && resume.getSize() <= MAX_FILE_SIZE) {
-                application.setResume(javax.sql.rowset.serial.SerialBlob.createBlob(resume.getBytes()));
+                Blob blob = new SerialBlob(resume.getBytes());
+                application.setResume(blob);
             }
 
             application.setEducationDetails(educationDetails);
@@ -60,33 +66,52 @@ public class ApplicationController {
             applicationService.saveApplication(application);
             return ResponseEntity.ok("Application added successfully.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: " + e.getMessage());
         }
     }
 
-    // Get all applications
+    /**
+     * GET endpoint to retrieve all applications
+     */
     @GetMapping("/")
     public ResponseEntity<List<Application>> getAllApplications() {
-        return ResponseEntity.ok(applicationService.getAllApplications());
+        try {
+            return ResponseEntity.ok(applicationService.getAllApplications());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
+    /**
+     * GET endpoint to retrieve a specific application by its ID
+     */
     @GetMapping("/{applicationId}")
     public ResponseEntity<Application> getApplication(@PathVariable Long applicationId) {
-        return applicationService.getApplicationById(applicationId)
-                .map(ResponseEntity::ok)
+        Optional<Application> application = applicationService.getApplicationById(applicationId);
+        return application.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+    /**
+     * GET endpoint to fetch applications by email
+     */
     @GetMapping("/by-email/{email}")
     public ResponseEntity<List<Application>> getApplicationsByEmail(@PathVariable String email) {
-        List<Application> applications = applicationService.getApplicationsByEmail(email);
-        if (applications.isEmpty()) {
-            return ResponseEntity.noContent().build();
+        try {
+            List<Application> applications = applicationService.getApplicationsByEmail(email);
+            if (applications.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(applications);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(applications);
     }
 
-    // Delete an application by ID
+    /**
+     * DELETE endpoint to delete application by ID
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteApplication(@PathVariable Long id) {
         try {
@@ -96,5 +121,4 @@ public class ApplicationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error: Application not found");
         }
     }
-
 }
