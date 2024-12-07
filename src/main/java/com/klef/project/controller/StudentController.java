@@ -6,9 +6,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.klef.project.model.Student;
 import com.klef.project.service.StudentService;
@@ -38,16 +45,7 @@ public class StudentController {
                 .body("Student created successfully");
     }
 
-    private void sendWelcomeEmail(String toEmail, String studentName) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Welcome to Our Platform");
-        message.setText("Dear " + studentName + ",\n\n" +
-                "Welcome! Your student account has been successfully created.\n" +
-                "Feel free to explore the platform and reach out if you have any questions.\n\n" +
-                "Best regards,\nUniversity Team");
-       // mailSender.send(message);
-    }
+    
 
     @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/checkstudentlogin")
