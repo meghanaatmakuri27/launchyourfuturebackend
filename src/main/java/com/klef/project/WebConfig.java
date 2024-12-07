@@ -9,7 +9,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("https://launchyourfuture.netlify.app") // Example with a wildcard for port
+                .allowedOriginPatterns("https://launchyourfuture.netlify.app","http://localhost:3000") // Example with a wildcard for port
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowCredentials(true);
     }
