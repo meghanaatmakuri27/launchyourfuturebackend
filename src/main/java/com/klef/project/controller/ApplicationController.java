@@ -19,7 +19,7 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit for file upload
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
 
     @Autowired
     public ApplicationController(ApplicationService applicationService) {
@@ -27,7 +27,7 @@ public class ApplicationController {
     }
 
     /**
-     * POST endpoint to create a new application
+     * Create an application entry.
      */
     @PostMapping("/add")
     public ResponseEntity<String> addApplication(
@@ -54,7 +54,6 @@ public class ApplicationController {
             application.setCountry(country);
             application.setCanVerifyWork(canVerifyWork);
 
-            // Handle file blob conversion safely
             if (resume != null && resume.getSize() <= MAX_FILE_SIZE) {
                 Blob blob = new SerialBlob(resume.getBytes());
                 application.setResume(blob);
@@ -66,51 +65,42 @@ public class ApplicationController {
             applicationService.saveApplication(application);
             return ResponseEntity.ok("Application added successfully.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
         }
     }
 
     /**
-     * GET endpoint to retrieve all applications
+     * Get all applications.
      */
     @GetMapping("/")
     public ResponseEntity<List<Application>> getAllApplications() {
-        try {
-            return ResponseEntity.ok(applicationService.getAllApplications());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return ResponseEntity.ok(applicationService.getAllApplications());
     }
 
     /**
-     * GET endpoint to retrieve a specific application by its ID
+     * Get a specific application by ID.
      */
     @GetMapping("/{applicationId}")
     public ResponseEntity<Application> getApplication(@PathVariable Long applicationId) {
-        Optional<Application> application = applicationService.getApplicationById(applicationId);
-        return application.map(ResponseEntity::ok)
+        return applicationService.getApplicationById(applicationId)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     /**
-     * GET endpoint to fetch applications by email
+     * Fetch applications by email.
      */
     @GetMapping("/by-email/{email}")
     public ResponseEntity<List<Application>> getApplicationsByEmail(@PathVariable String email) {
-        try {
-            List<Application> applications = applicationService.getApplicationsByEmail(email);
-            if (applications.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-            return ResponseEntity.ok(applications);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        List<Application> applications = applicationService.getApplicationsByEmail(email);
+        if (applications.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok(applications);
     }
 
     /**
-     * DELETE endpoint to delete application by ID
+     * Delete an application by ID.
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteApplication(@PathVariable Long id) {
