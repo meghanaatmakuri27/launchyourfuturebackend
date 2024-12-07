@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/applications")
@@ -51,14 +52,21 @@ public class ApplicationController {
             application.setCountry(country);
             application.setCanVerifyWork(canVerifyWork);
 
+            // Handle resume upload if within size limits
             if (resume != null && resume.getSize() <= MAX_FILE_SIZE) {
-                Blob blob = new SerialBlob(resume.getBytes()); // Create Blob safely
+                Blob blob = new SerialBlob(resume.getBytes());
                 application.setResume(blob);
             }
 
-            application.setEducationDetails(educationDetails != null ? educationDetails : new ArrayList<>());
-            application.setSkills(skills != null ? skills : new ArrayList<>());
+            // Serialize lists into comma-separated strings for database storage
+            application.setEducationDetails(
+                    educationDetails != null ? String.join(",", educationDetails) : ""
+            );
+            application.setSkills(
+                    skills != null ? String.join(",", skills) : ""
+            );
 
+            // Persist the application entity
             applicationService.saveApplication(application);
             return ResponseEntity.ok("Application added successfully.");
         } catch (Exception e) {

@@ -1,18 +1,11 @@
 package com.klef.project.model;
 
-
-
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 
 import java.sql.Blob;
-import java.util.List;
 
 @Entity
 public class Application {
@@ -30,18 +23,13 @@ public class Application {
     private String country;
     private Boolean canVerifyWork;
 
-   
     private Blob resume;
 
-    @ElementCollection
-    @CollectionTable(name = "skills", joinColumns = @JoinColumn(name = "application_id"))
-    @Column(name = "skill_name")
-    private List<String> skills;
+    // Store all education details in a single string column as JSON or comma-separated values
+    private String educationDetails;
 
-    @ElementCollection
-    @CollectionTable(name = "education_details", joinColumns = @JoinColumn(name = "application_id"))
-    @Column(name = "education_detail")
-    private List<String> educationDetails;
+    // Store all skills in a single string column as JSON or comma-separated values
+    private String skills;
 
     public Long getApplicationId() {
         return applicationId;
@@ -123,19 +111,19 @@ public class Application {
         this.resume = resume;
     }
 
-    public List<String> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(List<String> skills) {
-        this.skills = skills;
-    }
-
-    public List<String> getEducationDetails() {
+    public String getEducationDetails() {
         return educationDetails;
     }
 
-    public void setEducationDetails(List<String> educationDetails) {
+    public void setEducationDetails(String educationDetails) {
         this.educationDetails = educationDetails;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public void setSkills(String skills) {
+        this.skills = skills;
     }
 }
