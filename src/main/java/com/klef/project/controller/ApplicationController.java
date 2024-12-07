@@ -7,11 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.sql.rowset.serial.SerialBlob;
 import java.sql.Blob;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/applications")
@@ -26,9 +26,6 @@ public class ApplicationController {
         this.applicationService = applicationService;
     }
 
-    /**
-     * Create an application entry.
-     */
     @PostMapping("/add")
     public ResponseEntity<String> addApplication(
             @RequestParam Long jobId,
@@ -55,12 +52,12 @@ public class ApplicationController {
             application.setCanVerifyWork(canVerifyWork);
 
             if (resume != null && resume.getSize() <= MAX_FILE_SIZE) {
-                Blob blob = new SerialBlob(resume.getBytes());
+                Blob blob = new SerialBlob(resume.getBytes()); // Create Blob safely
                 application.setResume(blob);
             }
 
-            application.setEducationDetails(educationDetails);
-            application.setSkills(skills);
+            application.setEducationDetails(educationDetails != null ? educationDetails : new ArrayList<>());
+            application.setSkills(skills != null ? skills : new ArrayList<>());
 
             applicationService.saveApplication(application);
             return ResponseEntity.ok("Application added successfully.");
@@ -69,17 +66,11 @@ public class ApplicationController {
         }
     }
 
-    /**
-     * Get all applications.
-     */
     @GetMapping("/")
     public ResponseEntity<List<Application>> getAllApplications() {
         return ResponseEntity.ok(applicationService.getAllApplications());
     }
 
-    /**
-     * Get a specific application by ID.
-     */
     @GetMapping("/{applicationId}")
     public ResponseEntity<Application> getApplication(@PathVariable Long applicationId) {
         return applicationService.getApplicationById(applicationId)
@@ -87,21 +78,6 @@ public class ApplicationController {
                 .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-    /**
-     * Fetch applications by email.
-     */
-    @GetMapping("/by-email/{email}")
-    public ResponseEntity<List<Application>> getApplicationsByEmail(@PathVariable String email) {
-        List<Application> applications = applicationService.getApplicationsByEmail(email);
-        if (applications.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(applications);
-    }
-
-    /**
-     * Delete an application by ID.
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteApplication(@PathVariable Long id) {
         try {

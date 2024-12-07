@@ -44,7 +44,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application application = applicationRepository.findById(applicationId)
             .orElseThrow(() -> new RuntimeException("Application not found with ID " + applicationId));
 
-        application.setStatus(newStatus);
+        
         return applicationRepository.save(application);
     }
 
