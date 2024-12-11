@@ -26,7 +26,7 @@ public class AdminServiceImpl implements AdminService {
     // Get admin details (since there's only one admin)
     @Override
     public Admin getAdmin() {
-        return adminRepository.findById("admin1@gmail.com").orElse(null); // Assuming "admin1" is the only admin
+        return adminRepository.findById("admin@gmail.com").orElse(null); // Assuming "admin1" is the only admin
     }
 }
 
